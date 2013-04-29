@@ -193,14 +193,14 @@ void wgsim_print_mutref(const char *name, const kseq_t *ks, mutseq_t *hap1, muts
 						printf("%s\t%d\t", name, i+1);
 						for (j = i; j < ks->seq.l && hap1->s[j] != hap2->s[j] && (hap1->s[j]&mutmsk) == DELETE; ++j)
 							putchar("ACGTN"[nst_nt4_table[(int)ks->seq.s[j]]]);
-						printf("\t-\t-\n");
+						printf("\t-\t+\n");
 					}
 				} else if ((c[2]&mutmsk) == DELETE) {
 					if (i >= j) {
 						printf("%s\t%d\t", name, i+1);
 						for (j = i; j < ks->seq.l && hap1->s[j] != hap2->s[j] && (hap2->s[j]&mutmsk) == DELETE; ++j)
 							putchar("ACGTN"[nst_nt4_table[(int)ks->seq.s[j]]]);
-						printf("\t-\t-\n");
+						printf("\t-\t+\n");
 					}
 				} else if (((c[1] & mutmsk) >> 12) <= 4 && ((c[1] & mutmsk) >> 12) > 0) { // ins1
 					printf("%s\t%d\t-\t", name, i+1);
@@ -323,8 +323,10 @@ void wgsim_core(FILE *fpout1, FILE *fpout2, const char *fn, int is_hap, uint64_t
 			} while (0)
 
 			__gen_read(0, pos, ++i);
-			__gen_read(1, pos + d - 1, --i);
-			for (k = 0; k < s[1]; ++k) tmp_seq[1][k] = tmp_seq[1][k] < 4? 3 - tmp_seq[1][k] : 4; // complement
+			__gen_read(1, pos + d - s[1], ++i);
+			uint8_t revcomp[s[1]];
+			for (k = 0; k < s[1]; ++k) revcomp[k] = tmp_seq[1][s[1] - k - 1] < 4? 3 - tmp_seq[1][s[1] - k - 1] : 4; 
+			for (k = 0; k < s[1]; ++k) tmp_seq[1][k] = revcomp[k];
 			if (ext_coor[0] < 0 || ext_coor[1] < 0) { // fail to generate the read(s)
 				--ii;
 				continue;
