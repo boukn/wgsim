@@ -319,6 +319,7 @@ void wgsim_core(FILE *fpout1, FILE *fpout2, const char *fn, int is_hap, uint64_t
 							tmp_seq[x][k++] = ins & 0x3;				\
 					}													\
 				}														\
+				if (x) ext_coor[x] = i - 1;									\
 				if (k != s[x]) ext_coor[x] = -10;						\
 			} while (0)
 
